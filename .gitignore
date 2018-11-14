@@ -13,4 +13,5 @@ composer.lock
 composer.phar
 .sass-cache
 vendor
+config.local.php
 !.gitignore

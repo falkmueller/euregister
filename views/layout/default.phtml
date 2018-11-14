@@ -1,5 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title><?= isset($title) ? $title : "" ?></title>
         <link rel="stylesheet" href="<?= $this->asset("public/css/spectre.min.css"); ?>">
         <link rel="stylesheet" href="<?= $this->asset("public/css/layout.css"); ?>">
@@ -12,8 +16,8 @@
                     <a href="<?= $this->url("home") ?>" class="navbar-brand mr-2"><img src="<?= $this->asset("public/images/logo.png"); ?>"/> EU Transparency Register</a>
                 </section>
                 <section class="navbar-section">
-                  <a href="#" class="btn btn-link">Test</a>
-                  <a href="#" class="btn btn-link">Test</a>
+                  <a href="<?= $this->url("controller", ["controller" => "info"]) ?>" class="btn btn-link">Info</a>
+                  <a href="<?= $this->url("controller", ["controller" => "import"]) ?>" class="btn btn-link">Import</a>
                 </section>
              </header>
         </div>
