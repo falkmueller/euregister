@@ -9,14 +9,14 @@
         <link rel="stylesheet" href="<?= $this->asset("public/css/layout.css"); ?>">
     </head>
     <body>
-       
-        <div class="container"> 
-            <header class="navbar">
+        <div class="header"> 
+            <header class="navbar container">
                 <section class="navbar-section">
                     <a href="<?= $this->url("home") ?>" class="navbar-brand mr-2"><img src="<?= $this->asset("public/images/logo.png"); ?>"/> EU Transparency Register</a>
                 </section>
                 <section class="navbar-section">
                   <a href="<?= $this->url("controller", ["controller" => "info"]) ?>" class="btn btn-link">Info</a>
+                  <a target="_blank" href="https://www.falk-m.de/impressum/" class="btn btn-link">Impressum</a>
                   <a href="<?= $this->url("controller", ["controller" => "import"]) ?>" class="btn btn-link">Import</a>
                 </section>
              </header>

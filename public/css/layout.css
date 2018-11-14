@@ -2,6 +2,15 @@
     max-width: 1200px;
 }
 
+.header {
+    margin-bottom: 20px;
+    background-color: #003399;
+}
+
+.header a, .header a:visited {
+    color: #fff;
+}
+
 .navbar-brand img {
     height: 1em;
 }
