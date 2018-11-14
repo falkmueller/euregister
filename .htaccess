@@ -1,0 +1,53 @@
+<IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteCond %{HTTPS} off
+        RewriteCond %{HTTP_HOST} !^localhost
+        RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+<ifModule mod_gzip.c>
+    mod_gzip_on Yes
+    mod_gzip_dechunk Yes
+    mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+    mod_gzip_item_include handler ^cgi-script$
+    mod_gzip_item_include mime ^text/.*
+    mod_gzip_item_include mime ^application/x-javascript.*
+    mod_gzip_item_exclude mime ^image/.*
+    mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+#disable directory listing
+Options -Indexes 
+
+#switch on rewrite engine
+RewriteEngine On
+
+#allow robots.txt
+RewriteRule robots.txt$ public/robots.txt [NC,L]
+
+#if folder not "public", then rewrite to index.php
+RewriteRule !^(public)/(.*)$ index.php [NC,L]
+
+# All folder to index.php
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*)$ index.php [NC,L,QSA]
+
+#all existing files stream to browser
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l
+RewriteRule ^.*$ - [NC,L]
+
+#other to index.php
+RewriteRule ^(.*)$ index.php [NC,L,QSA]
