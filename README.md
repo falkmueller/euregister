@@ -2,20 +2,49 @@
 
 Web application to analyse the [EU transarency register](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
 
-## Demo
+## start service
 
-[dev.falk-m.de/uni/euregister](https://dev.falk-m.de/uni/euregister/) (user: 'uni', password: 'uni')
 
-## install
+```
+	./service.sh start
+```
 
-1. download zip or clone repository
-2. run composer ```composer install```
+optional with port
 
-## vendor
 
-- [Slim Framework](https://www.slimframework.com/)
-- [Plates Template engine](http://platesphp.com/)
-- [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/)
-- [Filebase json database](https://github.com/filebase/Filebase)
-- [ZendSearch Lucene PHP portation](https://github.com/zendframework/ZendSearch)
-- [Spectre CSS Framework](https://picturepan2.github.io/spectre/)
+```
+	./service.sh start 8001
+```
+
+optional with output in terminal
+
+
+```
+	./service.sh 8001 output
+```
+
+## end service
+
+
+```
+	./service.sh end
+```
+
+optional with port
+
+```
+	./service.sh end 8001
+```
+
+## TODO
+
+### Backend
+
+- upload xslx
+- import to json store
+- add geo locations
+- create search index
+
+## Frontend
+
+- UX/UI
