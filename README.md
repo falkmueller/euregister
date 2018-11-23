@@ -2,6 +2,10 @@
 
 Web application to analyse the [EU transarency register](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
 
+## requirements
+
+```pip install Whoosh```
+
 ## start service
 
 
