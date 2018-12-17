@@ -8,7 +8,7 @@ import SimpleHTTPServer #https://github.com/enthought/Python-2.7.3/blob/master/L
 import SocketServer
 import json
 from StringIO import StringIO
-
+from lib import api
 
 class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
@@ -48,20 +48,23 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             request = json.loads(post_data)
-
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-
-            result["success"] = 1
-            result["request"] = request
+            result = api.call(self.path, request)
+            
+            if result["success"]:
+                self.send_response(200)
+            else:
+                self.send_response(400)
                 
         except Exception as e:
             result = {}
             result["success"] = 0
             result["message"] = "Exception: " + str(e) 
+            self.send_response(500)
             
-        #print(result)    
+        print(result)   
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        
         io = StringIO()
         json.dump(result, io)
         self.wfile.write(io.getvalue())

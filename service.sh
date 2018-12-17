@@ -24,7 +24,7 @@ then
 	fi
 	
 
-elif [ "$1" = "end" ] 
+elif [ "$1" = "stop" ] 
 then
 	if lsof -i:$port
 	then
