@@ -24,7 +24,7 @@ Falk Müller, Tobias Mann
 - [data.europa.eu](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
 - seit 2015
 - ~ 12.000 Einträge
-- 54 Attrebute je eintrag
+- 54 Attribute je Eintrag
 
 ### Angaben
 
