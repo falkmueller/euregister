@@ -16,6 +16,7 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 - create index 
     - import csv: ```./cmd.py lib.parser.import_csv```
         - optional with csv file path: ```./cmd.py lib.parser.import_csv data/source/full_export_new.csv```
+    - add geo reference ```./cmd.py lib.parser.add_geo_reference```
     - create search index: ```./cmd.py lib.parser.create_index```
 
 ## TODO
@@ -29,3 +30,29 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 ## Frontend
 
 - UX/UI
+
+## Daten
+
+- infos: https://lobbypedia.de/wiki/Lobbyregister_EU
+
+- organisation_name
+- registration_date
+- website_address
+- level_of_interest
+- number_of_persons_involved
+- number_of_ep_accredited_persons
+- full_time_equivalent_fte
+- overall_budget_turnover_absolute_amount
+- overall_budget_turnover_as_a_range
+- estimate_of_costs_absolute_amount
+- estimate_of_costs_as_a_range
+- member_organisations
+- fields_of_interest
+- eu_initiatives
+- section
+- subsection
+- head_office
+    - head_office_address
+    - head_office_post_code
+    - head_office_country
+    - head_office_city

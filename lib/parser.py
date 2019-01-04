@@ -14,6 +14,9 @@ import re
 import sys
 import os.path
 from lib import searcher
+import urllib
+import requests
+import time
 
 from whoosh.fields import *
 
@@ -52,11 +55,91 @@ def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"da
             #print ', '.join(row)
             #print entity
             print entity["identification_number"]
+            
+            if os.path.exists(json_folder + '/' + entity["identification_number"]  + '.json'):
+                continue;
 
             with open(json_folder + '/' + entity["identification_number"]  + '.json', 'w') as fp:
                 json.dump(entity, fp)
             #break;
             
+def add_geo_reference(json_folder = u"data/json"):
+    i = 100;
+    
+    for filename in os.listdir(json_folder):
+        if not filename.endswith(".json"):
+            continue;
+
+        print filename;
+
+        with open(os.path.join(json_folder, filename), 'r') as f:
+            json_obj = json.load(f);
+
+        
+        #print json_obj["identification_number"]
+        if json_obj.has_key("lat"):
+            print "reference exists"
+            continue;
+            
+        if json_obj.has_key("no_geo_reference"):
+            print "already searched"
+            continue;
+            
+        i-=1;
+        if i <= 0:
+            break;
+            
+        print "get address " + json_obj["head_office_country"] + ", " + json_obj["head_office_post_code"] + ", " + json_obj["head_office_city"] + ", " + json_obj["head_office_address"]
+        
+        geoJson = get_geo_reference(json_obj["head_office_country"], json_obj["head_office_post_code"], json_obj["head_office_city"], json_obj["head_office_address"])
+        
+        if not geoJson:
+            json_obj["no_geo_reference"] = True
+            with open(os.path.join(json_folder, filename), 'w') as fp:
+                json.dump(json_obj, fp)
+            print "Adress not found"
+            continue
+        
+        json_obj["lat"] = geoJson["lat"] 
+        json_obj["lon"] = geoJson["lon"]
+        json_obj["country_code"] = geoJson["address"]["country_code"]
+        
+        with open(os.path.join(json_folder, filename), 'w') as fp:
+            json.dump(json_obj, fp)
+        
+        #print(geoJson);
+        #break
+    
+def get_geo_reference(country, postalcode, city, street):
+    time.sleep(2)
+    url = u"https://nominatim.openstreetmap.org/search";
+    query = "?addressdetails=1&limit=1&format=json&accept-language=de"
+    
+    if country:
+        query += "&country="+urllib.quote_plus(country.encode('utf-8'));
+        
+    if postalcode:
+        query += "&postalcode="+urllib.quote_plus(postalcode.encode('utf-8'));
+        
+    if city:
+        query += "&city="+urllib.quote_plus(city.encode('utf-8'));
+        
+    if street:
+        query += "&street="+urllib.quote_plus(street.encode('utf-8'));
+    
+    #print url + query;
+    
+    try:
+        
+        headers = {'referer': 'https://falk-m.de', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(url + query, headers=headers).json()
+    
+        if len(r) > 0:
+            return r[0]
+    except ValueError:
+        return;
+    
+
 def create_index(index_folder = u"data/index", json_folder = u"data/json"):
 
     if len(sys.argv) > 2:
