@@ -64,7 +64,7 @@ def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"da
             #break;
             
 def add_geo_reference(json_folder = u"data/json"):
-    i = 100;
+    i = 500;
     
     for filename in os.listdir(json_folder):
         if not filename.endswith(".json"):
