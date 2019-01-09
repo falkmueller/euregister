@@ -63,7 +63,7 @@ def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"da
             with open(json_folder + '/' + entity["identification_number"]  + '.json', 'w') as fp:
                 json.dump(entity, fp)
             #break;
-            
+                 
 def add_geo_reference(json_folder = u"data/json"):
     i = 600;
     
@@ -148,6 +148,99 @@ def get_geo_reference(country, postalcode, city, street):
     
         if len(r) > 0:
             return r[0]
+    except ValueError:
+        return;
+
+def add_geo_reference_google(json_folder = u"data/json"):
+    i = 600;
+    
+    reference_exists = 0
+    already_searched = 0
+    
+    for filename in os.listdir(json_folder):
+        if not filename.endswith(".json"):
+            continue;
+
+        print filename;
+
+        with open(os.path.join(json_folder, filename), 'r') as f:
+            json_obj = json.load(f);
+
+            
+        
+        #print json_obj["identification_number"]
+        if json_obj.has_key("lat"):
+            print "reference exists"
+            reference_exists+=1;
+            continue;
+            
+        if json_obj.has_key("no_geo_reference_google"):
+            print "already searched"
+            already_searched+=1;
+            continue;
+            
+        i-=1;
+        if i <= 0:
+            break;
+            
+        print "get address " + json_obj["head_office_country"] + ", " + json_obj["head_office_post_code"] + ", " + json_obj["head_office_city"] + ", " + json_obj["head_office_address"]
+        
+        geoJson = get_geo_reference_google(json_obj["head_office_country"], json_obj["head_office_post_code"], json_obj["head_office_city"], json_obj["head_office_address"])
+        
+        if not geoJson:
+            json_obj["no_geo_reference_google"] = True
+            already_searched+=1;
+            with open(os.path.join(json_folder, filename), 'w') as fp:
+                json.dump(json_obj, fp)
+            print "Adress not found"
+            continue
+        
+        json_obj["lat"] = geoJson["geometry"]["location"]["lat"] 
+        json_obj["lon"] = geoJson["geometry"]["location"]["lng"]
+        
+        for c in geoJson["address_components"]:
+            if "country" in c["types"]:
+                json_obj["country_code"] = c["short_name"]
+        reference_exists+=1
+        
+        with open(os.path.join(json_folder, filename), 'w') as fp:
+            json.dump(json_obj, fp)
+        
+        
+        
+    print reference_exists
+    print already_searched    
+    
+def get_geo_reference_google(country, postalcode, city, street):
+    #time.sleep(random.randint(1,2))
+    url = u"https://maps.google.com/maps/api/geocode/json?key=AIzaSyAMSCJEwSTKbxZWbcAtHb4zdx4tlT3XG-8&address=";
+    query = ""
+    
+    #"{$datas["plz"]} {$datas["ort"]}, {$datas["strasse"]} {$datas["hausnr"]}, {$land}";
+    
+    if postalcode:
+        query += postalcode.encode('utf-8');
+        
+    if city:
+        query += " "+city.encode('utf-8');
+    
+    if street:
+        query += " "+street.encode('utf-8');
+        
+    if country:
+        query += ", "+country.encode('utf-8');
+        
+     
+    query = urllib.quote_plus(query)   
+    #print url + query;
+    
+    try:
+        
+        headers = {'referer': 'https://falk-m.de', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(url + query, headers=headers).json()
+    
+        if len(r) > 0 and len(r["results"]) > 0:
+            return r["results"][0]
     except ValueError:
         return;
     
