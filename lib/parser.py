@@ -17,6 +17,7 @@ from lib import searcher
 import urllib
 import requests
 import time
+import random
 
 from whoosh.fields import *
 
@@ -64,7 +65,10 @@ def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"da
             #break;
             
 def add_geo_reference(json_folder = u"data/json"):
-    i = 500;
+    i = 600;
+    
+    reference_exists = 0
+    already_searched = 0
     
     for filename in os.listdir(json_folder):
         if not filename.endswith(".json"):
@@ -75,14 +79,17 @@ def add_geo_reference(json_folder = u"data/json"):
         with open(os.path.join(json_folder, filename), 'r') as f:
             json_obj = json.load(f);
 
+            
         
         #print json_obj["identification_number"]
         if json_obj.has_key("lat"):
             print "reference exists"
+            reference_exists+=1;
             continue;
             
         if json_obj.has_key("no_geo_reference"):
             print "already searched"
+            already_searched+=1;
             continue;
             
         i-=1;
@@ -95,6 +102,7 @@ def add_geo_reference(json_folder = u"data/json"):
         
         if not geoJson:
             json_obj["no_geo_reference"] = True
+            already_searched+=1;
             with open(os.path.join(json_folder, filename), 'w') as fp:
                 json.dump(json_obj, fp)
             print "Adress not found"
@@ -103,15 +111,19 @@ def add_geo_reference(json_folder = u"data/json"):
         json_obj["lat"] = geoJson["lat"] 
         json_obj["lon"] = geoJson["lon"]
         json_obj["country_code"] = geoJson["address"]["country_code"]
+        reference_exists+=1
         
         with open(os.path.join(json_folder, filename), 'w') as fp:
             json.dump(json_obj, fp)
         
         #print(geoJson);
         #break
+        
+    print reference_exists
+    print already_searched
     
 def get_geo_reference(country, postalcode, city, street):
-    time.sleep(2)
+    time.sleep(random.randint(1,2))
     url = u"https://nominatim.openstreetmap.org/search";
     query = "?addressdetails=1&limit=1&format=json&accept-language=de"
     

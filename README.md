@@ -24,6 +24,7 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 ### Backend
 
 - add geo locations
+    - erster druchlauf: 7021 gefundene Geo-Referenzen, 4815 unzugeordnete
 - create search index
 - add frontend api
 
