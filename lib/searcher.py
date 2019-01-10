@@ -11,7 +11,8 @@ def get_schema():
     schema = Schema(id=ID(stored=True, unique=True))
     schema.add("*_s", TEXT(stored=True), glob=True)
     schema.add("*_b", BOOLEAN(stored=True), glob=True)
-    schema.add("*_n", NUMERIC(stored=True), glob=True)
+    schema.add("*_i", NUMERIC(int, stored=True), glob=True)
+    schema.add("*_f", NUMERIC(float, stored=True), glob=True)
     
     return schema 
 
@@ -41,7 +42,11 @@ def search(query_str = u"fields_of_interest_s:Customs", index_folder = u"data/in
             print res
             item = {};
             item["id"] =  res["id"];
+            item["organisation_name"] =  res["organisation_name_s"];
             item["website_address"] = res["website_address_s"]
+            item["country_code"] = res["country_code_s"]
+            item["lat"] = res["lat_f"]
+            item["lon"] = res["lon_f"]
             response["entities"].append(item)
         
     return response

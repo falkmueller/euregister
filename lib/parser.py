@@ -170,11 +170,14 @@ def add_geo_reference_google(json_folder = u"data/json"):
         
         #print json_obj["identification_number"]
         if json_obj.has_key("lat"):
+            #if not json_obj.has_key("country_code"):
+            #    print filename + " " + json_obj["head_office_country"]
             print "reference exists"
             reference_exists+=1;
             continue;
             
         if json_obj.has_key("no_geo_reference_google"):
+            print filename + " get address " + json_obj["head_office_country"] + ", " + json_obj["head_office_post_code"] + ", " + json_obj["head_office_city"] + ", " + json_obj["head_office_address"]
             print "already searched"
             already_searched+=1;
             continue;
@@ -275,10 +278,14 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
 
         writer.add_document(
             id=json_obj["identification_number"],
+            organisation_name_s=json_obj["organisation_name"],
             fields_of_interest_s=json_obj["fields_of_interest"],
             head_office_country_s=json_obj["head_office_country"],
             registration_date_s=json_obj["registration_date"],
-            website_address_s=json_obj["website_address"]
+            website_address_s=json_obj["website_address"],
+            country_code_s=json_obj["country_code"],
+            lat_f=json_obj["lat"],
+            lon_f=json_obj["lon"]
         )
 
     writer.commit(optimize=True)
