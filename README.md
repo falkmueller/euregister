@@ -6,6 +6,11 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 
 ```pip install Whoosh```
 
+## quick start
+
+- ```./cmd.py lib.parser.create_index```
+- ```./service.sh start```
+
 ## Commands
 
 - start service: ```./service.sh start```

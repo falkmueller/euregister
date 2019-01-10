@@ -274,7 +274,10 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
         with open(os.path.join(json_folder, filename)) as f:
             json_obj = json.load(f);
 
-        print json_obj["identification_number"]
+        #print json_obj["identification_number"]
+
+        if not json_obj["country_code"]:
+            print json_obj["identification_number"]
 
         writer.add_document(
             id=json_obj["identification_number"],
@@ -283,7 +286,7 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
             head_office_country_s=json_obj["head_office_country"],
             registration_date_s=json_obj["registration_date"],
             website_address_s=json_obj["website_address"],
-            country_code_s=json_obj["country_code"],
+            country_code_k=json_obj["country_code"].lower(),
             lat_f=json_obj["lat"],
             lon_f=json_obj["lon"]
         )
