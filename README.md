@@ -5,6 +5,7 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 ## requirements
 
 ```pip install Whoosh```
+```pip install requests```
 
 ## quick start
 
