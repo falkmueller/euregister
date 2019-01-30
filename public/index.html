@@ -56,7 +56,11 @@
             <p><span id="count">-</span> registrate companies</p>
             <p><a class="btn btn-primary btn-lg" href="/presentation" role="button">Presentation (German)</a></p>
           </div>
-          
+          <select id="chartSelect">
+            <option value="doughnut" selected>Doughnut chart</option>
+            <option value="bar">Bar chart</option>
+          </select>
+
           <div class="container">
               <canvas id="country_chart" width="400" height="400"></canvas>
           </div>
@@ -70,8 +74,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+    <script src="js/drawCharts.js"></script>
     <script type="text/javascript">
         $.ajax({
             method: 'POST',
@@ -80,65 +84,19 @@
             success: function(res){
                 $("#count").text(res.data.count)
                 console.log(res);
-                draw_country_chart(res.data.facets.countries)
+                window.chart = drawDoughnutChart(res.data.facets.countries);
+                window.countryData = res.data.facets.countries;
             }
         });
-        
-        function draw_country_chart(values){
-            
-            var sorted_values = [];
-            
-            $.each(values, function(idx, value){
-                sorted_values.push([idx, value]);
-            });
-            
-            sorted_values.sort(function(i1,i2){return i2[1] - i1[1]});
-            
-            var labels = [], data = [], colors = [];
-            //var datasets = [];
-            $.each(sorted_values, function(i, v){
-                /*datasets.push({
-                    label: code,
-                    data: [size],
-                    backgroundColor: getColor(1),
-                    borderWidth: 1
-                });*/
-               labels.push(v[0]);
-               data.push(v[1]);
-               colors.push(getColor(1));
-            })
-            
-            var ctx = document.getElementById("country_chart");
-            var myChart = new Chart(ctx,  {
-			type: 'doughnut',
-			data: {
-				datasets: [{
-					data: data,
-					backgroundColor: colors,
-					label: 'Countries'
-				}],
-				labels: labels
-			},
-			options: {
-				responsive: true,
-				legend: {
-					position: 'top',
-				},
-				title: {
-					display: true,
-					text: 'Countries'
-				},
-				animation: {
-					animateScale: true,
-					animateRotate: true
-				}
-			}
-		});
-        }
-        
-        function getColor(idx){
-            return "rgba(" + Math.floor(Math.random() * 255) + ","  + Math.floor(Math.random() * 255) + ","  + Math.floor(Math.random() * 255) + ", 0.8)"
-        }
+
+        $('#chartSelect').change(function() {
+          window.chart.destroy();
+          if ($(this).find(':selected').val() === "bar") {
+            window.chart = drawBarChart(window.countryData);
+          } else {
+            window.chart = drawDoughnutChart(window.countryData);
+          }
+        });
     </script>
   </body>
 </html>
