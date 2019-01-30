@@ -8,6 +8,7 @@
     <title>EU transparency register</title>
 
     <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -80,6 +81,12 @@
                 </div>
             </div>
           </div>
+          
+          <div class="panel panel-default">
+              <div class="panel-body">
+                  <div id="map"></div>
+              </div>
+          </div>
          
           
       </div>
@@ -92,7 +99,10 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
     <script src="js/drawCharts.js"></script>
+    <script src="js/leaflet.markercluster-src.js"></script>
+    
     <script type="text/javascript">
         var app = {
             loadData: function(query){
@@ -103,7 +113,7 @@
                 return $.ajax({
                     method: 'POST',
                     url: '/search',
-                    data: JSON.stringify({"query": query, page: 1, pagelen: 100}),
+                    data: JSON.stringify({"query": query, page: 1, pagelen: 100000}),
                 });
            },
            
@@ -123,6 +133,7 @@
                 window.chart = drawDoughnutChart(res.data.facets.countries);
                 window.countryData = res.data.facets.countries;
                 console.log(res);
+                app.loadMap(res.data.entities);
            },
            
            init: function(){
@@ -149,6 +160,31 @@
                 
                 
                 $("#select-filter-country").change(app.refreshResult);
+            },
+            
+            loadMap: function(entities){
+                if (app.map){
+                    app.map.off();
+                    app.map.remove();
+                }
+                document.getElementById('map').innerHTML = "<div id='map' style='width: 100%; height: 100%;'></div>";
+                var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 18,
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+			}),
+			latlng = L.latLng(51.144725, 12.226063);
+
+		app.map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
+
+		var markers = L.markerClusterGroup();
+		
+		for (var i = 0; i < entities.length; i++) {
+			var marker = L.marker(new L.LatLng(entities[i].lat, entities[i].lon), { title: entities[i].organisation_name });
+			marker.bindPopup(entities[i].organisation_name);
+			markers.addLayer(marker);
+		}
+
+		app.map.addLayer(markers);
             }
         };
          
