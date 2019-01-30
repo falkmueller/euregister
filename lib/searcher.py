@@ -3,6 +3,7 @@
 import re
 import sys
 import os.path
+import json
 
 from whoosh.index import create_in, open_dir
 from whoosh.fields import *
@@ -24,7 +25,7 @@ def create_index(index_folder):
 def get_index(index_folder):
     return open_dir(index_folder);
     
-def search(query_str = u"*:*", page = 1,  index_folder = u"data/index"):
+def search(query_str = u"*:*", page = 1, pagelen = 10,  index_folder = u"data/index"):
     #fields_of_interest_s:Customs
     from whoosh.qparser import QueryParser
     ix = get_index(index_folder)
@@ -32,7 +33,7 @@ def search(query_str = u"*:*", page = 1,  index_folder = u"data/index"):
     #query = QueryParser("head_office_country_s", ix.schema).parse(u"poland")
     query = QueryParser("*", ix.schema).parse(query_str)
     #query = QueryParser("id", ix.schema).parse(u"001814832718-07")
-    results = ix.searcher().search_page(query, page, pagelen=10)
+    results = ix.searcher().search_page(query, page, pagelen=pagelen)
     #results = list(ix.searcher().documents()) 
     
     response = {}
@@ -60,8 +61,14 @@ def search(query_str = u"*:*", page = 1,  index_folder = u"data/index"):
     response["facets"] = {}
     response["facets"]["countries"] = {}
     countries = results.groups("country_code_k")
+    
+    
+    with open( u"data/country_codes.json") as f:
+            countryNames = json.load(f);
 
     for country_code in countries:
-        response["facets"]["countries"][country_code] = len(countries[country_code])
+        response["facets"]["countries"][country_code] = {"count": len(countries[country_code]), "name": country_code} 
+        if country_code.upper() in countryNames:
+            response["facets"]["countries"][country_code]["name"] = countryNames[country_code.upper()]
         
     return response

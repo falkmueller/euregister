@@ -56,14 +56,31 @@
             <p><span id="count">-</span> registrate companies</p>
             <p><a class="btn btn-primary btn-lg" href="/presentation" role="button">Presentation (German)</a></p>
           </div>
-          <select id="chartSelect">
-            <option value="doughnut" selected>Doughnut chart</option>
-            <option value="bar">Bar chart</option>
-          </select>
-
-          <div class="container">
-              <canvas id="country_chart" width="400" height="400"></canvas>
+          
+          <div class="panel panel-default">
+              <div class="panel-body">
+                  <div class="form-group">
+                  <label>Country</label>
+                  <select class="form-control" id="select-filter-country">
+                      <option value="">Filter country</option>
+                  </select>
+                  </div>
+              </div>
           </div>
+          
+          <div class="panel panel-default">
+            <div class="panel-body">
+               <select id="chartSelect">
+                    <option value="doughnut" selected>Doughnut chart</option>
+                    <option value="bar">Bar chart</option>
+                </select>
+
+                <div class="container">
+                    <canvas id="country_chart" width="400" height="400"></canvas>
+                </div>
+            </div>
+          </div>
+         
           
       </div>
       
@@ -77,25 +94,69 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
     <script src="js/drawCharts.js"></script>
     <script type="text/javascript">
-        $.ajax({
-            method: 'POST',
-            url: '/search',
-            data: JSON.stringify({"query": "*:*"}),
-            success: function(res){
-                $("#count").text(res.data.count)
-                console.log(res);
+        var app = {
+            loadData: function(query){
+                query = query || "*:*"
+                
+                console.log("search: " + query);
+                
+                return $.ajax({
+                    method: 'POST',
+                    url: '/search',
+                    data: JSON.stringify({"query": query, page: 1, pagelen: 100}),
+                });
+           },
+           
+           refreshResult: function(){
+               var query = "";
+               
+               var country = $("#select-filter-country").val();
+               
+               if(country != ""){
+                   query = "country_code_k:" + country;
+               }
+              
+               app.loadData(query).done(app.loadSesult);
+           },
+           
+           loadSesult: function(res){
                 window.chart = drawDoughnutChart(res.data.facets.countries);
                 window.countryData = res.data.facets.countries;
+                console.log(res);
+           },
+           
+           init: function(){
+                app.loadData().done(app.loadSesult).done(function(res){
+                    
+                    $("#count").text(res.data.count);
+                    
+                    var ddlCountry = $("#select-filter-country");
+                    $.each(res.data.facets.countries, function(k, v){
+                        ddlCountry.append(new Option(v.name, k));
+                    });
+                    
+                    
+                });
+                
+                $('#chartSelect').change(function() {
+                    window.chart.destroy();
+                    if ($(this).find(':selected').val() === "bar") {
+                      window.chart = drawBarChart(window.countryData);
+                    } else {
+                      window.chart = drawDoughnutChart(window.countryData);
+                    }
+                });
+                
+                
+                $("#select-filter-country").change(app.refreshResult);
             }
-        });
+        };
+         
 
-        $('#chartSelect').change(function() {
-          window.chart.destroy();
-          if ($(this).find(':selected').val() === "bar") {
-            window.chart = drawBarChart(window.countryData);
-          } else {
-            window.chart = drawDoughnutChart(window.countryData);
-          }
+        
+        
+        $(document).ready(function(){
+            app.init();
         });
     </script>
   </body>

@@ -18,8 +18,8 @@ function prepareData(rawValues) {
             backgroundColor: getColor(1),
             borderWidth: 1
         });*/
-       preparedData.labels.push(v[0]);
-       preparedData.data.push(v[1]);
+       preparedData.labels.push(v[1].name);
+       preparedData.data.push(v[1].count);
        preparedData.colors.push(getRandomColor());
     });
 
