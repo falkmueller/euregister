@@ -18,7 +18,7 @@ function prepareData(rawValues) {
             backgroundColor: getColor(1),
             borderWidth: 1
         });*/
-       preparedData.labels.push(window.countryCodes[v[1].name] || v[1].name);
+       preparedData.labels.push(v[1].name);
        preparedData.data.push(v[1].count);
        preparedData.colors.push(getRandomColor());
     });
@@ -38,7 +38,7 @@ function drawDoughnutChart(values) {
             datasets: [{
                 data: data.data,
                 backgroundColor: data.colors,
-                label: 'Registered companies per country'
+                label: 'Registered companies'
             }],
             labels: data.labels
         },
@@ -50,7 +50,7 @@ function drawDoughnutChart(values) {
             },
             title: {
                 display: true,
-                text: 'Countries'
+                text: 'Registered companies per country'
             },
             animation: {
                 animateScale: true,
