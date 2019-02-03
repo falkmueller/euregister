@@ -36,7 +36,7 @@ function drawDoughnutChart(values) {
             datasets: [{
                 data: data.data,
                 backgroundColor: data.colors,
-                label: 'Countries'
+                label: 'Registered companies per country'
             }],
             labels: data.labels
         },
