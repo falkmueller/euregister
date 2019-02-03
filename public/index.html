@@ -100,6 +100,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+    <script src="data/countryCodes.js"></script>
     <script src="js/drawCharts.js"></script>
     <script src="js/leaflet.markercluster-src.js"></script>
     
@@ -126,10 +127,10 @@
                    query = "country_code_k:" + country;
                }
               
-               app.loadData(query).done(app.loadSesult);
+               app.loadData(query).done(app.loadResult);
            },
            
-           loadSesult: function(res){
+           loadResult: function(res){
                 window.chart = drawDoughnutChart(res.data.facets.countries);
                 window.countryData = res.data.facets.countries;
                 console.log(res);
@@ -137,7 +138,7 @@
            },
            
            init: function(){
-                app.loadData().done(app.loadSesult).done(function(res){
+                app.loadData().done(app.loadResult).done(function(res){
                     
                     $("#count").text(res.data.count);
                     

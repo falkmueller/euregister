@@ -18,7 +18,7 @@ function prepareData(rawValues) {
             backgroundColor: getColor(1),
             borderWidth: 1
         });*/
-       preparedData.labels.push(v[1].name);
+       preparedData.labels.push(window.countryCodes[v[1].name] || v[1].name);
        preparedData.data.push(v[1].count);
        preparedData.colors.push(getRandomColor());
     });
@@ -43,7 +43,7 @@ function drawDoughnutChart(values) {
         options: {
             responsive: true,
             legend: {
-                position: 'top',
+                display: false
             },
             title: {
                 display: true,
@@ -91,6 +91,6 @@ function drawBarChart(values) {
             }   
         }
     });
-    
+
     return myChart;
 }
