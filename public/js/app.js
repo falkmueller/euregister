@@ -28,6 +28,11 @@ var app = {
         if (app.chart) app.chart.destroy();
         app.chart = drawDoughnutChart(res.data.facets.countries);
         app.countryData = res.data.facets.countries;
+        if ($('#chartSelect :selected').val() === "bar") {
+            app.chart = drawBarChart(app.countryData);
+        } else {
+            app.chart = drawDoughnutChart(app.countryData);
+        }
         console.log(res);
         app.loadMap(res.data.entities);
    },

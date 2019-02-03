@@ -29,7 +29,9 @@ function prepareData(rawValues) {
 function drawDoughnutChart(values) {
     var data = prepareData(values);
     
-    var ctx = document.getElementById("country_chart");
+    $('#country_chart_bar').hide();
+    $('#country_chart_doughnut').show();
+    var ctx = document.getElementById("country_chart_doughnut");
     var myChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -42,6 +44,7 @@ function drawDoughnutChart(values) {
         },
         options: {
             responsive: true,
+            cutoutPercentage: 20,
             legend: {
                 display: false
             },
@@ -62,7 +65,10 @@ function drawDoughnutChart(values) {
 function drawBarChart(values) {
     var data = prepareData(values);
     
-    var ctx = document.getElementById("country_chart");
+    $('#country_chart_doughnut').hide();
+    $('#country_chart_bar').show();
+    $('#country_chart_bar').height(data.data.length * 12);
+    var ctx = document.getElementById("country_chart_bar");
     var myChart = new Chart(ctx, {
         type: 'horizontalBar',
         data: {
@@ -75,6 +81,7 @@ function drawBarChart(values) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             legend: {
                 display: false
             },
@@ -86,11 +93,16 @@ function drawBarChart(values) {
                 animateScale: true,
             },
             scales: {
-                xAxes: [{position: "top"}],
-                yAxes: [{position: "left"}]
+                xAxes: [{
+                    position: "top",
+                    id: "x1",
+                }],
+                yAxes: [{
+                    position: "left",
+                    categoryPercentage: 0.8
+                }]
             }   
         }
     });
-
     return myChart;
 }
