@@ -4,7 +4,7 @@ function getRandomColor() {
 
 function prepareData(rawValues) {
     var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id]]);
-    sortedValues.sort(function(i1,i2){return i2[1] - i1[1]});
+    sortedValues.sort((i1, i2) => i2[1].count - i1[1].count);
 
     var preparedData = {
         labels: [],
