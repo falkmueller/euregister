@@ -106,3 +106,17 @@ function drawBarChart(values) {
     });
     return myChart;
 }
+
+function clearChart(app) {
+    if (!app) return;
+    if (app.chart) {
+        // remove and re-add the canvas element to wipe all lingering event handlers
+        var clonedCanvas = app.chart.canvas.cloneNode();
+        var nextSibling = app.chart.canvas.nextSibling;
+        var parent = app.chart.canvas.parentNode;
+        app.chart.canvas.remove();
+        app.chart.destroy();
+        parent.insertBefore(clonedCanvas, nextSibling);
+    }
+    app.chart = null;
+}

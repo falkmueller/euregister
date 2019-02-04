@@ -25,7 +25,7 @@ var app = {
    
    loadResult: function(res) {
        // any previous charts need to be cleared away first
-        if (app.chart) app.chart.destroy();
+        clearChart(app);
         app.chart = drawDoughnutChart(res.data.facets.countries);
         app.countryData = res.data.facets.countries;
         if ($('#chartSelect :selected').val() === "bar") {
@@ -49,7 +49,7 @@ var app = {
         });
         
         $('#chartSelect').change(function() {
-            app.chart.destroy();
+            clearChart(app);
             if ($(this).find(':selected').val() === "bar") {
               app.chart = drawBarChart(app.countryData);
             } else {
