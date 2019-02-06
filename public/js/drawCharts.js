@@ -31,6 +31,7 @@ function drawDoughnutChart(values) {
     
     $('#country_chart_bar').hide();
     $('#country_chart_doughnut').show();
+    $('#country_chart_doughnut').height(500 + data.data.length * 2);
     var ctx = document.getElementById("country_chart_doughnut");
     var myChart = new Chart(ctx, {
         type: 'doughnut',
@@ -45,8 +46,13 @@ function drawDoughnutChart(values) {
         options: {
             responsive: true,
             cutoutPercentage: 20,
+            maintainAspectRatio: false,
             legend: {
-                display: false
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontSize: 10
+                }
             },
             title: {
                 display: true,
