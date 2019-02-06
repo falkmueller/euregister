@@ -329,3 +329,7 @@ max-height: 95%;}
     color: #fff;
     background-color: initial;
 }
+
+.reveal pre code {
+    max-height: 600px;
+}
