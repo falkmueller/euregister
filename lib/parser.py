@@ -18,20 +18,15 @@ import urllib
 import requests
 import time
 import random
+import hashlib
 
 from whoosh.fields import *
 
 def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"data/json"):   
     
-    if len(sys.argv) > 2:
-        csv_file = sys.argv[2]
-
     if not os.path.isfile(csv_file):
         print "file " + csv_file + " not found";
         return;
-
-    if len(sys.argv) > 3:
-        json_folder = sys.argv[3]
 
     if not os.path.exists(json_folder) or os.path.isfile(json_folder):
         print "folder " + json_folder + " not found";
@@ -250,15 +245,9 @@ def get_geo_reference_google(country, postalcode, city, street):
 
 def create_index(index_folder = u"data/index", json_folder = u"data/json"):
 
-    if len(sys.argv) > 2:
-        index_folder = sys.argv[2]
-
     if not os.path.exists(index_folder) or os.path.isfile(index_folder):
         print "folder " + index_folder + " not found";
         return;
-
-    if len(sys.argv) > 3:
-        json_folder = sys.argv[3];
 
     if not os.path.exists(json_folder) or os.path.isfile(json_folder):
         print "folder " + json_folder + " not found";
@@ -266,7 +255,12 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
 
     ix = searcher.create_index(index_folder)
     writer = ix.writer()
+    
+    with open( u"data/country_codes.json") as f:
+            countryNames = json.load(f);
 
+    dicts = {'sections': {},'countries': {}, 'count': 0}
+    
     for filename in os.listdir(json_folder):
         if not filename.endswith(".json"):
             continue;
@@ -274,11 +268,22 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
         with open(os.path.join(json_folder, filename)) as f:
             json_obj = json.load(f);
 
-        #print json_obj["identification_number"]
-
-        if not json_obj["country_code"]:
-            print json_obj["identification_number"]
-
+        print json_obj["identification_number"]
+        
+        section_hash = hashlib.md5(json_obj["section"]).hexdigest().decode("utf-8")[:6]
+        if not section_hash in dicts["sections"]:
+            dicts["sections"][section_hash] = {'name': json_obj["section"], 'subsections': {}}
+        
+        subsection_hash = hashlib.md5(json_obj["subsection"]).hexdigest().decode("utf-8")[:6]
+        
+        if not subsection_hash in dicts["sections"][section_hash]['subsections']:
+            dicts["sections"][section_hash]['subsections'][subsection_hash] = {'name': json_obj["subsection"]}
+        
+        if json_obj["country_code"].upper() in countryNames:
+            dicts["countries"][json_obj["country_code"]] = countryNames[json_obj["country_code"].upper()]
+        else:
+            dicts["countries"][json_obj["country_code"]] = json_obj["country_code"]
+        
         writer.add_document(
             id=json_obj["identification_number"],
             organisation_name_s=json_obj["organisation_name"],
@@ -287,9 +292,16 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
             registration_date_s=json_obj["registration_date"],
             website_address_s=json_obj["website_address"],
             country_code_k=json_obj["country_code"].lower(),
+            section_k = section_hash,
+            subsection_k = subsection_hash,
             lat_f=json_obj["lat"],
             lon_f=json_obj["lon"]
         )
+        
+        dicts["count"] += 1;
 
     writer.commit(optimize=True)
+    
+    with open('public/js/dicts.js', 'w') as fp:
+        fp.write("var dicts = " + json.dumps(dicts))
         

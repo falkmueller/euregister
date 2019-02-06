@@ -14,11 +14,27 @@ var app = {
    refreshResult: function(){
        var query = "";
        
-       var country = $("#select-filter-country").val();
+       var value = $("#select-filter-country").val();
        
-       if(country != ""){
-           query = "country_code_k:" + country;
+       if(value != ""){
+           query += "country_code_k:" + value;
        }
+       
+       var value = $("#select-filter-section").val();
+       
+       if(value != ""){
+           if(query != ""){ query += " AND "}
+           query += "section_k:" + value;
+       }
+       
+       var value = $("#select-filter-subsection").val();
+       
+       if(value != ""){
+           if(query != ""){ query += " AND "}
+           query += "subsection_k:" + value;
+       }
+       
+       
       
        app.loadData(query).done(app.loadResult);
    },
@@ -26,38 +42,66 @@ var app = {
    loadResult: function(res) {
        // any previous charts need to be cleared away first
         clearChart(app);
-        app.chart = drawDoughnutChart(res.data.facets.countries);
-        app.countryData = res.data.facets.countries;
+        app.lastResult = res.data;
         if ($('#chartSelect :selected').val() === "bar") {
-            app.chart = drawBarChart(app.countryData);
+            app.chart = drawBarChart(app.lastResult.facets.countries);
         } else {
-            app.chart = drawDoughnutChart(app.countryData);
+            app.chart = drawDoughnutChart(app.lastResult.facets.countries);
         }
         console.log(res);
         app.loadMap(res.data.entities);
    },
    
    init: function(){
-        app.loadData().done(app.loadResult).done(function(res){
-            $("#count").text(res.data.count);
-            
-            var ddlCountry = $("#select-filter-country");
-            $.each(res.data.facets.countries, function(k, v){
-                ddlCountry.append(new Option(v.name, k));
-            });
-            
+        $("#count").text(dicts.count);
+        
+       var ddlCountry = $("#select-filter-country");
+       var keysSorted = Object.keys(dicts.countries).sort(function(a,b){
+            var x = dicts.countries[a].toLowerCase();
+            var y = dicts.countries[b].toLowerCase();
+            return x < y ? -1 : x > y ? 1 : 0;
+       })
+        $.each(keysSorted, function(k, v){
+            ddlCountry.append(new Option(dicts.countries[v], v));
         });
+        
+        var ddlSection = $("#select-filter-section");
+       var keysSorted = Object.keys(dicts.sections).sort(function(a,b){
+            var x = dicts.sections[a].name.toLowerCase();
+            var y = dicts.sections[b].name.toLowerCase();
+            return x < y ? -1 : x > y ? 1 : 0;
+       })
+        $.each(keysSorted, function(k, v){
+            ddlSection.append(new Option(dicts.sections[v].name, v));
+        });
+            
+        app.refreshResult();
         
         $('#chartSelect').change(function() {
             clearChart(app);
             if ($(this).find(':selected').val() === "bar") {
-              app.chart = drawBarChart(app.countryData);
+              app.chart = drawBarChart(app.lastResult.facets.countries);
             } else {
-              app.chart = drawDoughnutChart(app.countryData);
+              app.chart = drawDoughnutChart(app.lastResult.facets.countries);
             }
         });
         
         $("#select-filter-country").change(app.refreshResult);
+        $("#select-filter-section").change(app.refreshResult).change(function(){
+            var section = $(this).val();
+            var subSelect = $("#select-filter-subsection");
+            $("option[value!='']", subSelect).remove();
+            if(section != ""){
+                $.each(dicts.sections[section].subsections, function(subsection, val){
+                      var option = $("<option />");
+                      option.html(val.name);
+                      option.attr("value", subsection);
+                      subSelect.append(option);
+                });
+            }
+        });
+        
+        $("#select-filter-subsection").change(app.refreshResult);
     },
     
     loadMap: function(entities) {

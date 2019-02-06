@@ -56,19 +56,19 @@ def search(query_str = u"*:*", page = 1, pagelen = 10,  index_folder = u"data/in
     #facets
     facets = sorting.Facets()
     facets.add_field("country_code_k")
+    facets.add_field("section_k")
     results = ix.searcher().search(query, groupedby=facets)
     
     response["facets"] = {}
     response["facets"]["countries"] = {}
     countries = results.groups("country_code_k")
-    
-    
-    with open( u"data/country_codes.json") as f:
-            countryNames = json.load(f);
 
     for country_code in countries:
-        response["facets"]["countries"][country_code] = {"count": len(countries[country_code]), "name": country_code} 
-        if country_code.upper() in countryNames:
-            response["facets"]["countries"][country_code]["name"] = countryNames[country_code.upper()]
-        
+        response["facets"]["countries"][country_code] = len(countries[country_code])
+
+    response["facets"]["sections"] = {} #[]
+    sections = results.groups("section_k")
+    for section_code in sections:
+        response["facets"]["sections"][section_code] = len(sections[section_code])
+
     return response

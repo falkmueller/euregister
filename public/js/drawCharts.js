@@ -3,8 +3,8 @@ function getRandomColor() {
 }
 
 function prepareData(rawValues) {
-    var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id]]);
-    sortedValues.sort((i1, i2) => i2[1].count - i1[1].count);
+    var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], dicts.countries[id]]);
+    sortedValues.sort((i1, i2) => i2[1] - i1[1]);
 
     var preparedData = {
         labels: [],
@@ -12,14 +12,8 @@ function prepareData(rawValues) {
         colors: []
     };
     $.each(sortedValues, function(i, v){
-        /*datasets.push({
-            label: code,
-            data: [size],
-            backgroundColor: getColor(1),
-            borderWidth: 1
-        });*/
-       preparedData.labels.push(v[1].name);
-       preparedData.data.push(v[1].count);
+       preparedData.labels.push(v[2]);
+       preparedData.data.push(v[1]);
        preparedData.colors.push(getRandomColor());
     });
 
