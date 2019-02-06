@@ -2,121 +2,203 @@ function getRandomColor() {
     return "rgba(" + Math.floor(Math.random() * 255) + ","  + Math.floor(Math.random() * 255) + ","  + Math.floor(Math.random() * 255) + ", 0.8)"
 }
 
-function prepareData(rawValues) {
-    var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], dicts.countries[id]]);
-    sortedValues.sort((i1, i2) => i2[1] - i1[1]);
-
-    var preparedData = {
-        labels: [],
-        data: [],
-        colors: []
-    };
-    $.each(sortedValues, function(i, v){
-       preparedData.labels.push(v[2]);
-       preparedData.data.push(v[1]);
-       preparedData.colors.push(getRandomColor());
-    });
-
-    return preparedData;
-}
-
-function drawDoughnutChart(values) {
-    var data = prepareData(values);
+var customChart = {
     
-    $('#country_chart_bar').hide();
-    $('#country_chart_doughnut').show();
-    $('#country_chart_doughnut').height(500 + data.data.length * 2);
-    var ctx = document.getElementById("country_chart_doughnut");
-    var myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: data.data,
-                backgroundColor: data.colors,
-                label: 'Registered companies'
-            }],
-            labels: data.labels
-        },
-        options: {
-            responsive: true,
-            cutoutPercentage: 20,
-            maintainAspectRatio: false,
-            legend: {
-                display: true,
-                position: "bottom",
-                labels: {
-                    fontSize: 10
-                }
-            },
-            title: {
-                display: true,
-                text: 'Registered companies per country'
-            },
-            animation: {
-                animateScale: true,
-                animateRotate: true
-            }
-        }
-    });
-
-    return myChart;
-}
-
-function drawBarChart(values) {
-    var data = prepareData(values);
+    chart: null,
     
-    $('#country_chart_doughnut').hide();
-    $('#country_chart_bar').show();
-    $('#country_chart_bar').height(data.data.length * 12);
-    var ctx = document.getElementById("country_chart_bar");
-    var myChart = new Chart(ctx, {
-        type: 'horizontalBar',
-        data: {
-            datasets: [{
-                data: data.data,
-                backgroundColor: data.colors,
-                label: 'Registered companies'
-            }],
-            labels: data.labels
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: 'Registered companies per country'
-            },
-            animation: {
-                animateScale: true,
-            },
-            scales: {
-                xAxes: [{
-                    position: "top",
-                    id: "x1",
-                }],
-                yAxes: [{
-                    position: "left",
-                    categoryPercentage: 0.8
-                }]
-            }   
+    title: "",
+    
+    selectors: {
+        bar: "",
+        doughnut: ""
+    },
+    
+    draw: function(values, type){
+        this.clearChart();
+       
+        if(type !== "bar"){
+            this.chart = this.drawDoughnutChart(this.prepareData(values));
+        } else {
+            this.chart = this.drawBarChart(this.prepareData(values)); 
         }
-    });
-    return myChart;
-}
-
-function clearChart(app) {
-    if (!app) return;
-    if (app.chart) {
+    },
+    
+    clearChart: function() {
+        if(!this.chart){
+            return;
+        }
+        
         // remove and re-add the canvas element to wipe all lingering event handlers
-        var clonedCanvas = app.chart.canvas.cloneNode();
-        var nextSibling = app.chart.canvas.nextSibling;
-        var parent = app.chart.canvas.parentNode;
-        app.chart.canvas.remove();
-        app.chart.destroy();
+        var clonedCanvas = this.chart.canvas.cloneNode();
+        var nextSibling = this.chart.canvas.nextSibling;
+        var parent = this.chart.canvas.parentNode;
+        this.chart.canvas.remove();
+        this.chart.destroy();
         parent.insertBefore(clonedCanvas, nextSibling);
+
+        this.chart = null;
+    },
+    
+    prepareData: function(rawValues) {
+        return rawValues;
+    },
+    
+    
+    drawDoughnutChart: function(data) {
+        $(this.selectors.bar).hide();
+        $(this.selectors.doughnut).show();
+        $(this.selectors.doughnut).height(500 + data.data.length * 2);
+        
+        var ctx = document.getElementById($(this.selectors.doughnut).attr("id"));
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.colors,
+                    label: 'Registered companies'
+                }],
+                labels: data.labels
+            },
+            options: {
+                responsive: true,
+                cutoutPercentage: 20,
+                maintainAspectRatio: false,
+                legend: {
+                    display: true,
+                    position: "bottom",
+                    labels: {
+                        fontSize: 10
+                    }
+                },
+                title: {
+                    display: this.title != "",
+                    text: this.title
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+
+        return myChart;
+    },
+
+    drawBarChart: function(data) {
+        $(this.selectors.doughnut).hide();
+        $(this.selectors.bar).show();
+        $(this.selectors.bar).height(100 + data.data.length * 12);
+        $(this.selectors.bar).css({"max-width": "100%"});
+         
+        var ctx = document.getElementById($(this.selectors.bar).attr("id"));
+        var myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.colors,
+                    label: 'Registered companies'
+                }],
+                labels: data.labels
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: this.title != "",
+                    text: this.title
+                },
+                animation: {
+                    animateScale: true,
+                },
+                scales: {
+                    xAxes: [{
+                        position: "top",
+                        id: "x1",
+                    }],
+                    yAxes: [{
+                        position: "left",
+                        categoryPercentage: 0.8
+                    }]
+                }   
+            }
+        });
+        return myChart;
     }
-    app.chart = null;
-}
+    
+};
+
+
+
+
+
+
+var sectionChart = $.extend({}, customChart, {
+    selectors: { bar: "#country_chart_bar--sections", doughnut: "#country_chart_doughnut--sections"},
+    draw: function(values, subvalues, type){
+        this.clearChart();
+        
+        console.log(type);
+       
+        if(type !== "bar"){
+            this.chart = this.drawDoughnutChart(this.prepareData(values));
+        } else {
+            this.chart = this.drawBarChart(this.prepareData(values, subvalues)); 
+        }
+    },
+    prepareData: function(rawValues, subvalues) {
+        var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], dicts.sections[id].name]);
+        sortedValues.sort((i1, i2) => i2[1] - i1[1]);
+        
+        subvalues = subvalues || {};
+
+        var preparedData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+        $.each(sortedValues, function(i, v){
+           preparedData.labels.push(v[2]);
+           preparedData.data.push(v[1]);
+           var color = getRandomColor();
+           preparedData.colors.push(color);
+           
+           $.each(dicts.sections[v[0]].subsections, function(sub_key, sub_value){
+               if(subvalues[sub_key]){
+                    preparedData.labels.push(sub_value.name);
+                    preparedData.data.push(subvalues[sub_key]);
+                    preparedData.colors.push(color);
+               }
+           });
+        });
+
+        return preparedData;
+    },
+
+});
+
+var countryChart = $.extend({}, customChart, {
+    selectors: { bar: "#country_chart_bar", doughnut: "#country_chart_doughnut"},
+    prepareData: function(rawValues) {
+        var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], dicts.countries[id]]);
+        sortedValues.sort((i1, i2) => i2[1] - i1[1]);
+
+        var preparedData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+        $.each(sortedValues, function(i, v){
+           preparedData.labels.push(v[2]);
+           preparedData.data.push(v[1]);
+           preparedData.colors.push(getRandomColor());
+        });
+
+        return preparedData;
+    },
+});
+console.log(countryChart.selectors);

@@ -1,15 +1,4 @@
 var app = {
-    loadData: function(query){
-        query = query || "*:*"
-        
-        console.log("search: " + query);
-        
-        return $.ajax({
-            method: 'POST',
-            url: '/search',
-            data: JSON.stringify({"query": query, page: 1, pagelen: 100000}),
-        });
-   },
    
    refreshResult: function(){
        var query = "";
@@ -34,22 +23,29 @@ var app = {
            query += "subsection_k:" + value;
        }
        
+       query = query || "*:*";
        
-      
-       app.loadData(query).done(app.loadResult);
+       $.ajax({
+            method: 'POST',
+            url: '/facets',
+            data: JSON.stringify({"query": query}),
+        }).done(app.loadFacets);
+        
+        $.ajax({
+            method: 'POST',
+            url: '/list',
+            data: JSON.stringify({"query": query, page: 1, pagelen: 100000}),
+        }).done(app.loadList);
    },
    
-   loadResult: function(res) {
-       // any previous charts need to be cleared away first
-        clearChart(app);
-        app.lastResult = res.data;
-        if ($('#chartSelect :selected').val() === "bar") {
-            app.chart = drawBarChart(app.lastResult.facets.countries);
-        } else {
-            app.chart = drawDoughnutChart(app.lastResult.facets.countries);
-        }
-        console.log(res);
-        app.loadMap(res.data.entities);
+   loadFacets: function(res) {
+        app.facets = res.data;
+        countryChart.draw(app.facets.countries, $('#chartSelect :selected').val())
+        sectionChart.draw(app.facets.sections, app.facets.subsections, $('#chartSelect--sections :selected').val())
+   },
+   
+   loadList: function(res){
+       app.loadMap(res.data.entities);
    },
    
    init: function(){
@@ -78,12 +74,11 @@ var app = {
         app.refreshResult();
         
         $('#chartSelect').change(function() {
-            clearChart(app);
-            if ($(this).find(':selected').val() === "bar") {
-              app.chart = drawBarChart(app.lastResult.facets.countries);
-            } else {
-              app.chart = drawDoughnutChart(app.lastResult.facets.countries);
-            }
+            countryChart.draw(app.facets.countries, $(this).find(':selected').val())
+        });
+        
+        $('#chartSelect--sections').change(function() {
+            sectionChart.draw(app.facets.sections, app.facets.subsections, $(this).find(':selected').val())
         });
         
         $("#select-filter-country").change(app.refreshResult);

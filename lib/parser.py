@@ -274,15 +274,15 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
         if not section_hash in dicts["sections"]:
             dicts["sections"][section_hash] = {'name': json_obj["section"], 'subsections': {}}
         
-        subsection_hash = hashlib.md5(json_obj["subsection"]).hexdigest().decode("utf-8")[:6]
+        subsection_hash = section_hash[0:3] + hashlib.md5(json_obj["subsection"]).hexdigest().decode("utf-8")[:6]
         
         if not subsection_hash in dicts["sections"][section_hash]['subsections']:
             dicts["sections"][section_hash]['subsections'][subsection_hash] = {'name': json_obj["subsection"]}
         
         if json_obj["country_code"].upper() in countryNames:
-            dicts["countries"][json_obj["country_code"]] = countryNames[json_obj["country_code"].upper()]
+            dicts["countries"][json_obj["country_code"].lower()] = countryNames[json_obj["country_code"].upper()]
         else:
-            dicts["countries"][json_obj["country_code"]] = json_obj["country_code"]
+            dicts["countries"][json_obj["country_code"].lower()] = json_obj["country_code"]
         
         writer.add_document(
             id=json_obj["identification_number"],

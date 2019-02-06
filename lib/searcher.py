@@ -52,23 +52,38 @@ def search(query_str = u"*:*", page = 1, pagelen = 10,  index_folder = u"data/in
             item["lat"] = res["lat_f"]
             item["lon"] = res["lon_f"]
             response["entities"].append(item)
+
+    return response
+
+def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
+    #fields_of_interest_s:Customs
+    from whoosh.qparser import QueryParser
+    ix = get_index(index_folder)
     
+    query = QueryParser("*", ix.schema).parse(query_str)
+    response = {}
     #facets
     facets = sorting.Facets()
     facets.add_field("country_code_k")
     facets.add_field("section_k")
+    facets.add_field("subsection_k")
     results = ix.searcher().search(query, groupedby=facets)
     
-    response["facets"] = {}
-    response["facets"]["countries"] = {}
-    countries = results.groups("country_code_k")
+    response["countries"] = {}
+    facet_results = results.groups("country_code_k")
+    for code in facet_results:
+        response["countries"][code] = len(facet_results[code])
 
-    for country_code in countries:
-        response["facets"]["countries"][country_code] = len(countries[country_code])
+    response["sections"] = {}
+    facet_results = results.groups("section_k")
+    for code in facet_results:
+        response["sections"][code] = len(facet_results[code])
 
-    response["facets"]["sections"] = {} #[]
-    sections = results.groups("section_k")
-    for section_code in sections:
-        response["facets"]["sections"][section_code] = len(sections[section_code])
+    response["subsections"] = {} #[]
+    facet_results = results.groups("subsection_k")
+    for code in facet_results:
+        response["subsections"][code] = len(facet_results[code])
 
     return response
+
+
