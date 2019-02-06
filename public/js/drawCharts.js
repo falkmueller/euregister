@@ -138,12 +138,10 @@ var customChart = {
 
 
 var sectionChart = $.extend({}, customChart, {
-    selectors: { bar: "#country_chart_bar--sections", doughnut: "#country_chart_doughnut--sections"},
+    selectors: { bar: "#chart_bar--sections", doughnut: "#chart_doughnut--sections"},
     draw: function(values, subvalues, type){
         this.clearChart();
         
-        console.log(type);
-       
         if(type !== "bar"){
             this.chart = this.drawDoughnutChart(this.prepareData(values));
         } else {
@@ -182,7 +180,7 @@ var sectionChart = $.extend({}, customChart, {
 });
 
 var countryChart = $.extend({}, customChart, {
-    selectors: { bar: "#country_chart_bar", doughnut: "#country_chart_doughnut"},
+    selectors: { bar: "#chart_bar--country", doughnut: "#chart_doughnut--country"},
     prepareData: function(rawValues) {
         var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], dicts.countries[id]]);
         sortedValues.sort((i1, i2) => i2[1] - i1[1]);
@@ -201,4 +199,24 @@ var countryChart = $.extend({}, customChart, {
         return preparedData;
     },
 });
-console.log(countryChart.selectors);
+
+var nopChart = $.extend({}, customChart, {
+    selectors: { bar: "#chart_bar--nop", doughnut: "#chart_doughnut--nop"},
+    prepareData: function(rawValues) {
+        var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], id]);
+        sortedValues.sort((i1, i2) => i2[1] - i1[1]);
+
+        var preparedData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+        $.each(sortedValues, function(i, v){
+           preparedData.labels.push(v[2]);
+           preparedData.data.push(v[1]);
+           preparedData.colors.push(getRandomColor());
+        });
+
+        return preparedData;
+    },
+});

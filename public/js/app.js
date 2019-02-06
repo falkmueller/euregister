@@ -23,6 +23,15 @@ var app = {
            query += "subsection_k:" + value;
        }
        
+       var value = $("#select-filter-nop").val();
+       if(value != ""){
+           if(query != ""){ query += " AND "}
+           
+           value = value.split(",");
+           
+           query += "number_of_persons_involved_i:[" + value[0] + " to " +  value[1] + "]";
+       }
+       
        query = query || "*:*";
        
        $.ajax({
@@ -42,10 +51,12 @@ var app = {
         app.facets = res.data;
         countryChart.draw(app.facets.countries, $('#chartSelect :selected').val())
         sectionChart.draw(app.facets.sections, app.facets.subsections, $('#chartSelect--sections :selected').val())
+        nopChart.draw(app.facets.number_of_persons, $('#chartSelect--nop :selected').val())
    },
    
    loadList: function(res){
        app.loadMap(res.data.entities);
+       app.loadTable(res.data.entities);
    },
    
    init: function(){
@@ -81,6 +92,10 @@ var app = {
             sectionChart.draw(app.facets.sections, app.facets.subsections, $(this).find(':selected').val())
         });
         
+        $('#chartSelect--nop').change(function() {
+            nopChart.draw(app.facets.number_of_persons, $(this).find(':selected').val())
+        });
+        
         $("#select-filter-country").change(app.refreshResult);
         $("#select-filter-section").change(app.refreshResult).change(function(){
             var section = $(this).val();
@@ -97,6 +112,10 @@ var app = {
         });
         
         $("#select-filter-subsection").change(app.refreshResult);
+        
+        $("#select-filter-nop").slider({});
+        
+        $("#select-filter-nop").on("slideStop", app.refreshResult);
     },
     
     loadMap: function(entities) {
@@ -122,6 +141,94 @@ var app = {
         }
 
     app.map.addLayer(markers);
+    },
+    
+    loadTable: function(entities){
+        if (app.table){
+            app.table.state.clear();
+            app.table.destroy();
+        } 
+        
+        app.table = $('#table').DataTable( {
+                "processing": true,
+                "serverSide": true,
+                ajax: function(data, callback, settings){
+                    
+                    var order_column = data.order[0].column;
+                    var order_dir = data.order[0].dir;
+                    var search = data.search.value;
+                    
+                    var source = entities;
+
+                    var sort_function = function(e1, e2) {
+                            if (e1.organisation_name < e2.organisation_name) {
+                                    return order_dir == "asc" ? -1 : 1;
+                            }
+                            return order_dir == "asc" ? 1 : -1;
+                    };
+                    
+                    if(order_column == 1){
+                        sort_function = function(e1, e2) {
+                                return (e1.number_of_persons - e2.number_of_persons) * (order_dir == "asc" ? 1 : -1);
+                        };
+                    } 
+                    else if(order_column == 2){
+                        sort_function = function(e1, e2) {
+                                if (e1.www < e2.www) {
+                                        return order_dir == "asc" ? -1 : 1;
+                                }
+                                return order_dir == "asc" ? 1 : -1;
+                        };
+                    } 
+                    else if(order_column == 3){
+                        sort_function = function(e1, e2) {
+                                if (dicts.countries[e1.country_code] < dicts.countries[e2.country_code]) {
+                                        return order_dir == "asc" ? -1 : 1;
+                                }
+                                return order_dir == "asc" ? 1 : -1;
+                        };
+                    } 
+                    
+                    source.sort(sort_function);
+                    
+                    if(search != ""){
+                        search = search.toLowerCase();
+                        source = source.filter(function(e1){
+                            return e1.organisation_name.toLowerCase().indexOf(search) > -1
+                        });
+                    }
+                    
+                    var rows = [];
+                    var last_idx = data.start + data.length; 
+                    if(last_idx > source.length) {
+                        last_idx = source.length
+                    }
+                    
+                    for(var i = data.start; i < last_idx; i++){
+                        var obj = source[i];
+                        
+                        var website = "";
+                        if(obj.www && obj.www){
+                            website = "<a target='_blank' href='" + obj.www + "'>" + obj.www + "</a>";
+                        }
+                        
+                            rows.push([
+                                obj.organisation_name,
+                                obj.number_of_persons,
+                                website,
+                                dicts.countries[obj.country_code]
+                            ]);
+                    }
+                    
+                    
+                    callback({
+                        draw: data.draw,
+                        recordsFiltered: source.length,
+                        recordsTotal: source.length,
+                        data: rows
+                    });
+                }
+            } );
     }
 };
  

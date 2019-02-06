@@ -47,10 +47,11 @@ def search(query_str = u"*:*", page = 1, pagelen = 10,  index_folder = u"data/in
             item = {};
             item["id"] =  res["id"];
             item["organisation_name"] =  res["organisation_name_s"];
-            item["website_address"] = res["website_address_s"]
+            item["www"] = res["website_address_s"]
             item["country_code"] = res["country_code_k"]
             item["lat"] = res["lat_f"]
             item["lon"] = res["lon_f"]
+            item["number_of_persons"] = res["number_of_persons_involved_i"]
             response["entities"].append(item)
 
     return response
@@ -63,10 +64,11 @@ def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
     query = QueryParser("*", ix.schema).parse(query_str)
     response = {}
     #facets
-    facets = sorting.Facets()
+    facets = sorting.Facets() 
     facets.add_field("country_code_k")
     facets.add_field("section_k")
     facets.add_field("subsection_k")
+    facets.add_facet("nop",  sorting.RangeFacet("number_of_persons_involved_i", 0, 1000, 5))
     results = ix.searcher().search(query, groupedby=facets)
     
     response["countries"] = {}
@@ -78,12 +80,17 @@ def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
     facet_results = results.groups("section_k")
     for code in facet_results:
         response["sections"][code] = len(facet_results[code])
-
-    response["subsections"] = {} #[]
+        
+    response["subsections"] = {}
     facet_results = results.groups("subsection_k")
     for code in facet_results:
         response["subsections"][code] = len(facet_results[code])
-
+        
+    response["number_of_persons"] = {}
+    facet_results = results.groups("nop");
+    for code in facet_results:
+        response["number_of_persons"][str(code[0]) + "-" + str(code[1])] = len(facet_results[code])
+  
     return response
 
 

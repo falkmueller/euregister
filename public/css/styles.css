@@ -99,3 +99,8 @@
 .marker-cluster span {
 	line-height: 30px;
 	}
+        
+.slider.slider-horizontal {
+    margin-left: 10px;
+    margin-right: 10px;
+}

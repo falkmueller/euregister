@@ -10,7 +10,9 @@
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/dt-1.10.18/datatables.min.css"/>
+        <link rel="stylesheet" href="css/bootstrap-slider.min.css">
+        <link rel="stylesheet" href="css/styles.css?l=1">
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -60,11 +62,24 @@
 
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div class="form-group">
-                        <label>Country</label>
-                        <select class="form-control" id="select-filter-country">
-                            <option value="">Filter country</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>Country</label>
+                                <select class="form-control" id="select-filter-country">
+                                    <option value="">Filter country</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>Number of persons involved </label>
+                                <div>
+                                    <b>1</b> <input id="select-filter-nop" type="text" class="span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="5" data-slider-value="[0, 100]"/> <b>100</b> 
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -97,8 +112,8 @@
                         </select>
                     </div>
 
-                    <canvas id="country_chart_doughnut"></canvas>
-                    <canvas id="country_chart_bar"></canvas>
+                    <canvas id="chart_doughnut--country"></canvas>
+                    <canvas id="chart_bar--country"></canvas>
 
                 </div>
             </div>
@@ -113,8 +128,23 @@
                             <option value="doughnut" >Doughnut chart</option>
                         </select>
                     </div>
-                    <canvas id="country_chart_doughnut--sections"></canvas>
-                    <canvas id="country_chart_bar--sections"></canvas>
+                    <canvas id="chart_doughnut--sections"></canvas>
+                    <canvas id="chart_bar--sections"></canvas>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">Number of persons involved</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Chart type</label>
+                        <select class="form-control" id="chartSelect--nop">
+                            <option value="bar" selected>Bar chart</option>
+                            <option value="doughnut" >Doughnut chart</option>
+                        </select>
+                    </div>
+                    <canvas id="chart_doughnut--nop"></canvas>
+                    <canvas id="chart_bar--nop"></canvas>
                 </div>
             </div>
 
@@ -124,7 +154,25 @@
                     <div id="map"></div>
                 </div>
             </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">List of companies</div>
+                <div class="panel-body">
+                    <table id="table" class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Number of lobbiests</th>
+                                <th>Website</th>
+                                <th>Country</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
+        
+       
 
         <a href="https://github.com/falkmueller/euregister" target="_blank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
@@ -137,6 +185,8 @@
         <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
         <script src="js/drawCharts.js"></script>
         <script src="js/leaflet.markercluster-src.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/dt-1.10.18/datatables.min.js"></script>
+        <script src="js/bootstrap-slider.min.js"></script>
         <script src="js/dicts.js"></script>
         <script src="js/app.js"></script>
     </body>
