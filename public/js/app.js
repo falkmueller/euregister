@@ -9,27 +9,41 @@ var app = {
            query += "country_code_k:" + value;
        }
        
-       var value = $("#select-filter-section").val();
-       
+       value = $("#select-filter-section").val();  
        if(value != ""){
            if(query != ""){ query += " AND "}
            query += "section_k:" + value;
        }
        
-       var value = $("#select-filter-subsection").val();
-       
+       value = $("#select-filter-subsection").val();
        if(value != ""){
            if(query != ""){ query += " AND "}
            query += "subsection_k:" + value;
        }
        
-       var value = $("#select-filter-nop").val();
+       value = $("#select-filter-nop").val();
        if(value != ""){
            if(query != ""){ query += " AND "}
            
            value = value.split(",");
            
            query += "number_of_persons_involved_i:[" + value[0] + " to " +  value[1] + "]";
+       }
+       
+       value = $("#inp-filter-search").val();
+       value = value.replace(/[^0-9a-zA-Z -]/gm, '')
+       if(value != ""){
+          
+           var sub_query = ""; 
+           
+           $.each(value.split(" "), function(i, v){
+               if(sub_query != ""){ sub_query += " AND "}
+               v += "*";
+               sub_query += "(organisation_name_s:" + v + " OR member_organisations_s:" + v + " OR goals__remit_s:" + v + ")";
+           })
+           
+           if(query != ""){ query += " AND "}
+           query += "(" + sub_query + ")"
        }
        
        query = query || "*:*";
@@ -55,6 +69,7 @@ var app = {
    },
    
    loadList: function(res){
+       $("#filter-res-count").html("[count] companies".replace("[count]", res.data.count) );
        app.loadMap(res.data.entities);
        app.loadTable(res.data.entities);
    },
@@ -116,6 +131,8 @@ var app = {
         $("#select-filter-nop").slider({});
         
         $("#select-filter-nop").on("slideStop", app.refreshResult);
+        
+        $("#btn-search").click(app.refreshResult);
     },
     
     loadMap: function(entities) {

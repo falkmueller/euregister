@@ -296,7 +296,9 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
             subsection_k = subsection_hash,
             lat_f=json_obj["lat"],
             lon_f=json_obj["lon"],
-            number_of_persons_involved_i=json_obj["number_of_persons_involved"]
+            number_of_persons_involved_i=json_obj["number_of_persons_involved"],
+            member_organisations_s = json_obj["member_organisations"],
+            goals__remit_s = json_obj["goals__remit"]
         )
         
         dicts["count"] += 1;
