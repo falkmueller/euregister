@@ -133,6 +133,60 @@ var app = {
         $("#select-filter-nop").on("slideStop", app.refreshResult);
         
         $("#btn-search").click(app.refreshResult);
+        
+        $(document).on("click", "a[data-identification_number]", app.onDetailsClick)
+    },
+    
+    onDetailsClick: function(e){
+       e.preventDefault();
+       var identification_number = $(e.currentTarget).data("identification_number");
+       console.log(identification_number);  
+        
+        $.ajax({
+            method: 'POST',
+            url: '/detail',
+            data: JSON.stringify({"id": identification_number}),
+        }).done(app.shopDetails);
+        
+    },
+    
+    shopDetails: function(info){
+        console.log(info);
+                
+        $.each(info.data, function(k, v){
+            if(v && v.replace){
+                v = v.replace(/(?:\r\n|\r|\n)/g, '<br>')
+            }
+           $("[data-detail='" + k + "']").html(v);
+        });
+
+        $("#detail-modal").off("shown.bs.modal");
+        $("#detail-modal").on("shown.bs.modal", function(){
+            if (app.detailsmap){
+                app.detailsmap.off();
+                app.detailsmap.remove();
+            }
+
+            document.getElementById('details-map').innerHTML = "<div id='inner_detail_map' style='width: 100%; height: 300px;'></div>";
+            var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
+            }),
+            latlng = L.latLng(info.data.lat, info.data.lon);
+
+            app.detailsmap = L.map('inner_detail_map', {center: latlng, zoom: 4, layers: [tiles]});
+
+            var markers = L.markerClusterGroup();
+
+            var marker = L.marker(new L.LatLng(info.data.lat, info.data.lon), { title: info.data.organisation_name });
+            //var content = "<a href='#' data-identification_number='" + entities[i].id + "'>" + entities[i].organisation_name + "</a>";
+            //marker.bindPopup(content);
+            markers.addLayer(marker);
+
+            app.detailsmap.addLayer(markers);
+        });
+        
+        $("#detail-modal").modal("show");
     },
     
     loadMap: function(entities) {
@@ -140,20 +194,21 @@ var app = {
             app.map.off();
             app.map.remove();
         }
-        document.getElementById('map').innerHTML = "<div id='map' style='width: 100%; height: 100%;'></div>";
+        document.getElementById('map').innerHTML = "<div id='inner_map' style='width: 100%; height: 100%;'></div>";
         var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
         }),
         latlng = L.latLng(51.144725, 12.226063);
 
-        app.map = L.map('map', {center: latlng, zoom: 5, layers: [tiles]});
+        app.map = L.map('inner_map', {center: latlng, zoom: 5, layers: [tiles]});
 
         var markers = L.markerClusterGroup();
 
         for (var i = 0; i < entities.length; i++) {
             var marker = L.marker(new L.LatLng(entities[i].lat, entities[i].lon), { title: entities[i].organisation_name });
-            marker.bindPopup(entities[i].organisation_name);
+            var content = "<a href='#' data-identification_number='" + entities[i].id + "'>" + entities[i].organisation_name + "</a>";
+            marker.bindPopup(content);
             markers.addLayer(marker);
         }
 
@@ -229,12 +284,14 @@ var app = {
                             website = "<a target='_blank' href='" + obj.www + "'>" + obj.www + "</a>";
                         }
                         
-                            rows.push([
-                                obj.organisation_name,
-                                obj.number_of_persons,
-                                website,
-                                dicts.countries[obj.country_code]
-                            ]);
+                        var name = "<a href='#' data-identification_number='" + obj.id + "'>" + obj.organisation_name + "</a>";
+                        
+                        rows.push([
+                            name,
+                            obj.number_of_persons,
+                            website,
+                            dicts.countries[obj.country_code]
+                        ]);
                     }
                     
                     
