@@ -131,6 +131,59 @@ Falk Müller, Tobias Mann
 
 --------------------------------------------------------------------------------
 
+## 4. Frontend
+
+**Filteroptionen**
+![Filteroptionen](media/filteroptionen.png)
+
+--------------------------------------------------------------------------------
+
+## 4. Frontend
+
+**Darstellung der Daten**
+
+- in Diagrammen visualisierte Aspekte:
+    - Anzahl der Unternehmen pro Land
+    - Anzahl der Unternehmen pro Unternehmensart
+    - Anzahl der Lobbyisten
+- geografische Verteilung auf einer Karte
+- Liste der Unternehmen mit einigen Informationen
+
+--------------------------------------------------------------------------------
+
+## 4. Frontend
+
+**Visiaulisierung in Diagrammen**
+![Doughnut](media/doughnut-diagramm.png)
+
+--------------------------------------------------------------------------------
+
+## 4. Frontend
+
+**Visiaulisierung in Diagrammen**
+![Balken](media/balken-diagramm.png)
+
+--------------------------------------------------------------------------------
+
+
+## 4. Frontend
+
+**Visiaulisierung der geografischen Verteilung**
+![Karte](media/karte.png)
+- frei zoom- und bewegbar
+- automatisches Clustering
+
+--------------------------------------------------------------------------------
+
+## 4. Frontend
+
+**Liste von Unternehmen**
+![Liste](media/liste.png)
+- weitere Detailinformationen per Klick
+- filter- und sortierbar
+
+--------------------------------------------------------------------------------
+
 ## 5. Services
 
 **/list**
