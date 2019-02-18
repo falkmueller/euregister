@@ -20,6 +20,7 @@ import time
 import random
 import hashlib
 
+from datetime import datetime
 from whoosh.fields import *
 
 def import_csv(csv_file = u"data/source/full_export_new.csv", json_folder = u"data/json"):   
@@ -298,7 +299,9 @@ def create_index(index_folder = u"data/index", json_folder = u"data/json"):
             lon_f=json_obj["lon"],
             number_of_persons_involved_i=json_obj["number_of_persons_involved"],
             member_organisations_s = json_obj["member_organisations"],
-            goals__remit_s = json_obj["goals__remit"]
+            goals__remit_s = json_obj["goals__remit"],
+            registration_date_d = datetime.datetime.strptime(json_obj["registration_date"], '%d/%m/%Y'),
+            registration_month_k = datetime.datetime.strptime(json_obj["registration_date"], '%d/%m/%Y').strftime('%Y-%m').decode("utf-8")
         )
         
         dicts["count"] += 1;

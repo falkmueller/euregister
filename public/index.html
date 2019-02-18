@@ -63,34 +63,25 @@
 
             <div class="panel panel-default">
                 <div class="panel-body">
-                   
+                    <form id="form-filter" class="form" method="GET">
                     <div class="form-group">
                          <label>Search</label>
                          <div class="row">
                             <div class="col-xs-10">
-                                <input type="text" class="form-control" id="inp-filter-search" placeholder="Search..." />
+                                <input type="text" class="form-control" name="search" id="inp-filter-search" placeholder="Search..." />
                             </div>
                              <div class="col-xs-2">
-                                 <button type="button" id="btn-search" class="btn btn-default btn-block"><i class="glyphicon glyphicon-search"></i></button>
+                                 <button type="submit" class="btn btn-default btn-block"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
                          </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6">
+                        <div class="col-xs-12">
                             <div class="form-group">
                                 <label>Country</label>
                                 <select class="form-control" id="select-filter-country">
                                     <option value="">Filter country</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                <label>Number of persons involved </label>
-                                <div>
-                                    <b>1</b> <input id="select-filter-nop" type="text" class="span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="5" data-slider-value="[0, 100]"/> <b>100</b> 
-                                </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -111,7 +102,29 @@
                         </div>
                         
                     </div>
-                    
+                        
+                    <div class="row">  
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>Number of persons involved </label>
+                                <div>
+                                    <b id="nop_from">1</b> <input id="select-filter-nop" type="text" class="span2" value="" data-slider-min="0" data-slider-max="100" data-slider-step="5" data-slider-value="[0, 100]"/> <b id="nop_to">100</b> 
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label>registration date</label>
+                                <div>
+                                    <b id="registration_from" ></b> <input id="select-filter-registration_date" type="text" class="span2" value=""/> <b id="registration_to"></b> 
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                        
+                    </form>
                     <span style="display: block; font-weight: bold; text-align: center" id="filter-res-count"></span>
                 </div>
             </div>
@@ -145,6 +158,13 @@
                     </div>
                     <canvas id="chart_doughnut--sections"></canvas>
                     <canvas id="chart_bar--sections"></canvas>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">Registration Date</div>
+                <div class="panel-body">
+                   <canvas id="chart_bar--registration_date"></canvas>
                 </div>
             </div>
             
@@ -205,6 +225,8 @@
                                 <span data-detail="head_office_country"></span>
                             </div>
                         </div>
+                        
+                        <p>registration date: <span data-detail="registration_date"></span></p>
                         
                         <h3>member organisations</h3>
                         <span data-detail="member_organisations"></span>

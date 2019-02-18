@@ -220,3 +220,66 @@ var nopChart = $.extend({}, customChart, {
         return preparedData;
     },
 });
+
+var registration_date_chart =  $.extend({}, customChart, {
+     selectors: { bar: "#chart_bar--registration_date"},
+     prepareData: function(rawValues) {
+        var sortedValues = Object.keys(rawValues).map((id) => [id, rawValues[id], parseInt(id.substr(0,4) + id.substr(5,2))]);
+        sortedValues.sort((i1, i2) => i1[2] - i2[2]);
+        
+        var preparedData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+        $.each(sortedValues, function(i, v){
+           preparedData.labels.push(v[0]);
+           preparedData.data.push(v[1]);
+           preparedData.colors.push('#003399');
+        });
+
+        return preparedData;
+    },
+    drawBarChart: function(data) {
+        $(this.selectors.doughnut).hide();
+        $(this.selectors.bar).show();
+        $(this.selectors.bar).height(400);
+        $(this.selectors.bar).css({"max-width": "100%"});
+         
+        var ctx = document.getElementById($(this.selectors.bar).attr("id"));
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.colors,
+                    label: 'Registered companies'
+                }],
+                labels: data.labels
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: this.title != "",
+                    text: this.title
+                },
+                animation: {
+                    animateScale: true,
+                },
+                scales: {
+                    xAxes: [{
+                        position: "top",
+                    }],
+                    yAxes: [{
+                        position: "left",
+                    }]
+                }   
+            }
+        });
+        return myChart;
+    }
+});

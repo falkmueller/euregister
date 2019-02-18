@@ -16,6 +16,7 @@ def get_schema():
     schema.add("*_i", NUMERIC(int, stored=True), glob=True)
     schema.add("*_f", NUMERIC(float, stored=True), glob=True)
     schema.add("*_k", KEYWORD(stored=True), glob=True)
+    schema.add("*_d", DATETIME(stored=True), glob=True)
     
     return schema 
 
@@ -52,8 +53,9 @@ def search(query_str = u"*:*", page = 1, pagelen = 10,  index_folder = u"data/in
             item["lat"] = res["lat_f"]
             item["lon"] = res["lon_f"]
             item["number_of_persons"] = res["number_of_persons_involved_i"]
+            #item["registration_date"] = res["registration_date_d"].strftime('%Y-%m-%d')
             response["entities"].append(item)
-
+            
     return response
 
 def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
@@ -68,6 +70,7 @@ def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
     facets.add_field("country_code_k")
     facets.add_field("section_k")
     facets.add_field("subsection_k")
+    facets.add_field("registration_month_k")
     facets.add_facet("nop",  sorting.RangeFacet("number_of_persons_involved_i", 0, 1000, 5))
     results = ix.searcher().search(query, groupedby=facets)
     
@@ -91,6 +94,11 @@ def get_facets(query_str = u"*:*",  index_folder = u"data/index"):
     for code in facet_results:
         response["number_of_persons"][str(code[0]) + "-" + str(code[1])] = len(facet_results[code])
   
+    response["registration_month"] = {}
+    facet_results = results.groups("registration_month_k")
+    for code in facet_results:
+        response["registration_month"][code] = len(facet_results[code])
+        
     return response
 
 

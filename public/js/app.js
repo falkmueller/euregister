@@ -22,12 +22,22 @@ var app = {
        }
        
        value = $("#select-filter-nop").val();
-       if(value != ""){
+       value = value.split(",");
+       if(value[0] != "" && value.length > 1 && ( parseInt(value[0]) !== 0 || parseInt(value[1]) !== 100)){
            if(query != ""){ query += " AND "}
-           
-           value = value.split(",");
-           
            query += "number_of_persons_involved_i:[" + value[0] + " to " +  value[1] + "]";
+       }
+       
+       value = $("#select-filter-registration_date").val();
+       value = value.split(",");
+       if(value.length == 2 && ( parseFloat(value[0]) > 2008 || parseFloat(value[1]) < app.slide_date_to)){
+           var year_from = Math.floor(parseFloat(value[0]));
+           var month_from = 1 + Math.round(11 * (parseFloat(value[0]) - year_from));
+
+           var year_to = Math.floor(parseFloat(value[1]));
+           var month_to = 1 + Math.round(11 * (parseFloat(value[1]) - year_to));
+            
+           query += "registration_date_d:[" + year_from + "-" + month_from + " to " +   year_to + "-" + month_to  + "]";
        }
        
        value = $("#inp-filter-search").val();
@@ -66,6 +76,7 @@ var app = {
         countryChart.draw(app.facets.countries, $('#chartSelect :selected').val())
         sectionChart.draw(app.facets.sections, app.facets.subsections, $('#chartSelect--sections :selected').val())
         nopChart.draw(app.facets.number_of_persons, $('#chartSelect--nop :selected').val())
+        registration_date_chart.draw(app.facets.registration_month, "bar")
    },
    
    loadList: function(res){
@@ -128,11 +139,46 @@ var app = {
         
         $("#select-filter-subsection").change(app.refreshResult);
         
-        $("#select-filter-nop").slider({});
-        
+        $("#select-filter-nop").slider({
+            formatter: function(value) {
+                    if(value.length !== 2){
+                        return "";
+                    }
+                    $("#nop_from").text( value[0]);
+                    $("#nop_to").text(value[1]);
+                    
+                    return value[0] + " to " +  value[1];
+            }
+        });
         $("#select-filter-nop").on("slideStop", app.refreshResult);
         
-        $("#btn-search").click(app.refreshResult);
+        app.slide_date_to = (new Date()).getFullYear() + 1;
+        
+        $("#select-filter-registration_date").slider({
+            min: 2008,
+            max: app.slide_date_to,
+            step: 0.1,
+            value: [2008, app.slide_date_to],
+            formatter: function(value) {
+                    if(value.length !== 2){
+                        return "";
+                    }
+                    var year_from = Math.floor(value[0]);
+                    var month_from = 1 + Math.round(11 * (value[0] - year_from));
+                    
+                    var year_to = Math.floor(value[1]);
+                    var month_to = 1 + Math.round(11 * (value[1] - year_to));
+                    
+                    $("#registration_from").text(year_from + "-" + month_from);
+                    $("#registration_to").text(year_to + "-" + month_to);
+                    
+                    return year_from + "-" + month_from + " to " + year_to + "-" + month_to;
+            }
+        });
+        $("#select-filter-registration_date").on("slideStop", app.refreshResult);
+        
+        
+        $("#form-filter").submit(function(e){ e.preventDefault(); app.refreshResult()});
         
         $(document).on("click", "a[data-identification_number]", app.onDetailsClick)
     },
