@@ -4,12 +4,22 @@ Web application to analyse the [EU transarency register](https://data.europa.eu/
 
 ![Screenshot](public/images/screenshot.png)
 
-## requirements
+## Overview
 
+This application aims to visualize the publicly available data about which individuals, groups and companies are involved in lobbying and influencing lawmaking in the European Union. It also offers basic filtering and search functionality to help information retrieval.
+The transparency register is published biannually in XLS and XML format. It consists of around 12.000 entries. Each entry contains address and contact information, legal status, fields of interest, degree of involvement, monetary and personnel expenses and the laws and drafts that are worked on.
+This information is parsed, categorized and enhanced with geolocation references by the server process before being presented by the client.
+
+## Installing
+
+### Technical Requirements
+- Python 2.7 +  PIP
+- Unix (shell script support and utility commands)
+- Setup:
 ```pip install Whoosh```
 ```pip install requests```
 
-## quick start
+### Quickstart
 
 - ```./cmd.py lib.parser.create_index```
 - ```./service.sh start```
