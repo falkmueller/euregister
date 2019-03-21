@@ -10,14 +10,21 @@ This application aims to visualize the publicly available data about which indiv
 The transparency register is published biannually in XLS and XML format. It consists of around 12.000 entries. Each entry contains address and contact information, legal status, fields of interest, degree of involvement, monetary and personnel expenses and the laws and drafts that are worked on.
 This information is parsed, categorized and enhanced with geolocation references by the server process before being presented by the client.
 
+## Filtering Options
+
+![Screenshot](public/presentation/media/filteroptionen.png)
+
+By default, the app will return all datasets. The main filtering option is a text search - each substring (separated by spaces) will be searched for in all text fields of the data, such as the name and the goal description.
+Beyond this, entries can be filtered by country of registration (select one), amount of employed lobbyists and registration date (select lower and upper bound) and the type of the organization (select a section and optionally a subsection).
+
 ## Installing
 
 ### Technical Requirements
 - Python 2.7 +  PIP
 - Unix (shell script support and utility commands)
 - Setup:
-```pip install Whoosh```
-```pip install requests```
+    - ```pip install Whoosh```
+    - ```pip install requests```
 
 ### Quickstart
 
