@@ -2,8 +2,6 @@
 
 Web application to analyze the [EU transarency register](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
 
-![Screenshot](public/images/screenshot.png)
-
 ## Overview
 
 This application aims to visualize the publicly available data about which individuals, groups and companies are involved in lobbying and influencing lawmaking in the European Union. It also offers basic filtering and search functionality to help information retrieval.
