@@ -1,6 +1,6 @@
 # Project: Lobby Register
 
-Web application to analyse the [EU transarency register](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
+Web application to analyze the [EU transarency register](https://data.europa.eu/euodp/en/data/dataset/transparency-register)
 
 ![Screenshot](public/images/screenshot.png)
 
@@ -12,10 +12,35 @@ This information is parsed, categorized and enhanced with geolocation references
 
 ## Filtering Options
 
-![Screenshot](public/presentation/media/filteroptionen.png)
+![Filter options](public/presentation/media/filteroptionen.png)
 
 By default, the app will return all datasets. The main filtering option is a text search - each substring (separated by spaces) will be searched for in all text fields of the data, such as the name and the goal description.
 Beyond this, entries can be filtered by country of registration (select one), amount of employed lobbyists and registration date (select lower and upper bound) and the type of the organization (select a section and optionally a subsection).
+
+## Viualiszation
+
+### Charts
+Aspects that amount to dividing the data up into general classifications, like which countries the organizations are based in, which section they belong to and roughly how many people are involved, will be represented by doughnut charts and horizontal bar charts. There is an setting to switch between those two options.
+The Doughnot charts are responsive, it is possible to hide slices of it by clicking on them - both in the diagram itself and the key - which will cause the other slices to be resized to match the percentage they represent with the hidden one excluded.
+
+![Doughnut chart](public/presentation/media/doughnut-diagramm.png)
+![Bar chart](public/presentation/media/balken-diagramm.png)
+
+The distribution of organizations by registration date is represented by a histogram.
+
+### Map
+
+The geographical distribution of the organization's address is shown by overlaying an OpenStreeMap world map with dots representing each company, automatically clustering groups that would be in close proximity to each other with the current zoom setting. Clicking on a cluster will zoom in on it, clicking on a single organization's marker will bring up information about it.
+
+![Map](public/presentation/media/karte.png)
+
+If possible, the OSM Nominatim API is used to map addresses to geolocations. Adresses that could not be located this way will be passed to the Google Geocode API instead.
+
+### List
+
+At the bottom of the page, the data is also presented by a separate paged list that can be filtered and sorted on the fly. Its entries will also link to a more in-deptth description of the stated goals of the organization.
+
+![List](public/presentation/media/liste.png)
 
 ## Installing
 
