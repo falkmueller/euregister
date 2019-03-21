@@ -43,7 +43,7 @@ At the bottom of the page, the data is also presented by a separate paged list t
 ## Installing
 
 ### Technical Requirements
-- Python 2.7 +  PIP
+- Python 2.7 + PIP
 - Unix (shell script support and utility commands)
 - Setup:
     - ```pip install Whoosh```
@@ -56,33 +56,21 @@ At the bottom of the page, the data is also presented by a separate paged list t
 
 ## Commands
 
-- start service: ```./service.sh start```
-    - optional with port: ```./service.sh start 8001```
-    - optional with output in terminal: ```./service.sh 8001 output```
-- end service: ```./service.sh stop```
-    - optional with port: ```./service.sh stop 8001```
-- create index 
-    - import csv: ```./cmd.py lib.parser.import_csv```
-        - optional with csv file path: ```./cmd.py lib.parser.import_csv data/source/full_export_new.csv```
-    - add geo reference ```./cmd.py lib.parser.add_geo_reference```
-    - create search index: ```./cmd.py lib.parser.create_index```
+- Start service: ```./service.sh start```
+    - Optional with port: ```./service.sh start 8001```
+    - Optional with output in terminal: ```./service.sh 8001 output```
+- End service: ```./service.sh stop```
+    - Optional with port: ```./service.sh stop 8001```
+- Create index 
+    - Import csv: ```./cmd.py lib.parser.import_csv```
+        - Optional with csv file path: ```./cmd.py lib.parser.import_csv data/source/full_export_new.csv```
+    - Add geo reference ```./cmd.py lib.parser.add_geo_reference```
+    - Create search index: ```./cmd.py lib.parser.create_index```
 
-## Geo Locations
+## Description of the source data
 
-- Felder:
-    - head_office_address
-    - head_office_post_code
-    - head_office_country
-    - head_office_city
-- erster Druchlauf: OSM nominatim api, 7021 gefundene Geo-Referenzen, 4815 unzugeordnete
-- zweiter Durchlauf: google geocode api, 7 von 4815 Adressen ohne Koordinaten
-- dritter durchlauf: 7 Adressen manuell zugeordnet
-    - Probleme: Länder, wie "Palestinian Occupied Territory"
-
-## Daten
-
-- Infos: [lobbypedia.de](https://lobbypedia.de/wiki/Lobbyregister_EU)
-- Felder von Interesse:
+- Additional information may be found here: [lobbypedia.de](https://lobbypedia.de/wiki/Lobbyregister_EU) (German)
+- Fields of interest:
     - organisation_name
     - registration_date
     - website_address
@@ -104,3 +92,54 @@ At the bottom of the page, the data is also presented by a separate paged list t
         - head_office_post_code
         - head_office_country
         - head_office_city
+
+- Example data set:
+```
+{
+  "member_organisations": "",
+  "identification_number": "000243429028-82",
+  "fields_of_interest": "Transport",
+  "head_office_address": "via alberto bergamini 50",
+  "full_time_equivalent_fte": "0,25",
+  "person_with_legal_responsibility": "Gabriele Benedetto",
+  "inter_groups": "",
+  "financial_year_start_date": "01/01/2016",
+  "grants": "",
+  "head_office_country": "Italy",
+  "eu_initiatives": "Road & mobility Package: Direttiva Europea Telepedaggio e relativa Decisione. Cooperative its , eurovignette",
+  "organisation_name": "Telepass S.p.a (TLP)",
+  "belgium_office_post_code": "",
+  "number_of_persons_involved": "1",
+  "procurement": "",
+  "section": "II - In-house lobbyists and trade/business/professional associations",
+  "source": "",
+  "belgium_office_address": "",
+  "subsection": "Other organisations",
+  "belgium_office_phone": "",
+  "number_of_ep_accredited_persons": "",
+  "overall_budget_turnover_as_a_range": "",
+  "belgium_office_city": "",
+  "persons_accredited_for_access_to_european_parliament_premises": "",
+  "estimate_of_costs_absolute_amount": "",
+  "registration_date": "20/11/2017",
+  "website_address": "http://telepass.com",
+  "commission_expert_groups_and_other_similar_entities_european_commission": "NA",
+  "head_office_post_box": "",
+  "head_office_city": "roma",
+  "membership": "",
+  "head_office_post_code": "",
+  "goals__remit": "Commercializzazione servizi di pagamento del pedaggio e della mobilit\\u00e0 legata al veicolo e alla persona",
+  "industry_forums": "",
+  "head_office_phone": "(+39)0643632670",
+  "level_of_interest": "European",
+  "relevant_communication": "",
+  "financial_year_end_date": "01/12/2016",
+  "estimate_of_costs_as_a_range": "0-9999",
+  "overall_budget_turnover_absolute_amount": "0",
+  "legal_status": "S.p.A",
+  "person_in_charge_of_eu_relations": "Gabriele Benedetto",
+  "customers": "",
+  "belgium_office_post_box": "",
+  "position": "Amministratore Delegato"
+}
+```
