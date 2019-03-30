@@ -57,11 +57,11 @@ At the bottom of the page, the data is also presented by a separate paged list t
 
 
 The ``query`` parameters expect inputs in the format of [Whoosh's query language](https://whoosh.readthedocs.io/en/latest/parsing.html). The underscore-letter combination at the end of the property name describes the data type:
-    - _i - Integer
-    - _s - String
-    - _f - Float
-    - _b - Boolean
-    - _k - Keyword
+- _i - Integer
+- _s - String
+- _f - Float
+- _b - Boolean
+- _k - Keyword
 
 Example query: ``country_code_k:de AND number_of_persons_involved_i:[10 to 100]``
 
