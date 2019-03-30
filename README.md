@@ -40,6 +40,23 @@ At the bottom of the page, the data is also presented by a separate paged list t
 
 ![List](public/presentation/media/liste.png)
 
+## Server API
+
+- ``/list``
+    - This is the interface for getting the complete datasets in a paginated manner. Supported parameters:
+        - ``query`` (default value: "*:*"): Search terms for filtering the results
+        - ``page`` (default value: 1): Returned page of the results.
+        - ``pagelen`` (default value: 10): Amount of results per page.
+![Returned list data object](public/presentation/media/request1.png)
+
+
+- ``/facets``
+    - This is the interface for getting the amounts of results matching various classifications. Supported parameters:
+        - ``query`` (default value: "*:*"): Search terms for filtering the results
+![Returned facets data object](public/presentation/media/request2.png)
+
+The ``query`` parameters expect inputs in the format of Whoosh's query language.
+
 ## Installing
 
 ### Technical Requirements
